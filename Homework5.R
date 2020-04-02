@@ -5,37 +5,50 @@ library(ggplot2)
 # Load the mpg dataset
 data("diamonds")
 
+#PROBLEM 1
+
 #the data is skewed left and not noise. This means that more bin numbers better represent the datas trend. That and
 #Rices Rule is relativly simple
 k <- ceiling(2*(length(diamonds$carat)^(1/3)))
 
-hist(diamonds$carat, xlab = "Carat", 
-     breaks = seq(min(diamonds$carat), max(diamonds$carat), length.out = k))
+#(a)
+#There are more lower weight diamonds than higher weight ones.
+ggplot(data = diamonds, aes(x = carat)) + geom_histogram(bins = k) + 
+  labs(x = "Carat", y = "Count", title = "Relationship Between the Amount of Diamonds Within Specific Carat Ranges")
 
-plot(carat ~ price, data = diamonds, col = (as.factor(diamonds$clarity)), xlab = "Price", ylab = "Carat", main = "Carat vs Price",
-     type = 'p', pch  = 20, cex = 0.75)
-legend("topleft", levels(as.factor(diamonds$clarity)), col = as.factor(diamonds$clarity), pch = 20)
+#(b)
+#The better the clarity, the more likely the diamond is to have a lower weight.
+ggplot(data = diamonds) + geom_point(mapping = aes(x = carat, y = price, color = clarity))
 
-
-ggplot(data = diamonds) + geom_point(mapping = aes(x = price, y = carat, color = clarity), alpha = 0.3) + 
+#(c)
+#The better the clarity, the more likely the diamond is to have a lower weight. The price and clarity are Sigmoid functions.
+ggplot(data = diamonds) + geom_point(mapping = aes(x = carat, y = price, color = clarity), alpha = 0.3) + 
   scale_colour_brewer(palette = "Dark2") + 
-  geom_smooth(mapping = aes(x = price, y = carat, color = clarity), method = 'gam') +
-  labs(x = "Price", y = "Carat", title = "Relationship between the Price and Carat of Diamonds")
+  geom_smooth(mapping = aes(x = carat, y = price, color = clarity), method = 'gam') +
+  labs(x = "Carat", y = "Price", title = "Relationship between the Price and Carat of Specific Clarity of Diamonds") +
+  theme_minimal() + scale_fill_discrete(name='Clarity') 
+
+#(d)
+#The better the clarity, the more likely the diamond is to have a lower weight. The price and clarity are polynomial functions.
+ggplot(data = diamonds) + geom_point(mapping = aes(x=carat, y=price, color=clarity)) + facet_wrap(~clarity) +
+  labs(x = "Carat", y = "Price", title = "Relationship between the Price and Carat of Specific Clarity of Diamonds") +
+  theme_minimal() + scale_fill_discrete(name='Clarity') 
+
+#(e)
+#The better quality cut, the lower the weight
+ggplot(data = diamonds, mapping = aes(y = as.factor(cut), x = carat, color = cut) ) + geom_point() #4
+
+#The better quality cut, the lower the weight
+ggplot(data = diamonds, mapping = aes(y = as.factor(cut), x = carat, color = cut) ) + geom_jitter() #3
+
+#The better quality cut, the lower the weight
+ggplot(data = diamonds, mapping = aes(y = as.factor(cut), x = carat, color = cut) ) + geom_boxplot() #2
+
+#The better quality cut, the lower the weight
+ggplot(data = diamonds, mapping = aes(y = as.factor(cut), x = carat, color = cut) ) + geom_violin() #1
 
 
-
-plot(carat ~ price, data = diamonds, col = diamonds$clarity, xlab = "Price", ylab = "Carat", main = "Carat vs Price",
-     type = 'p', pch  = 20, cex = 0.75)
-
-#I1   SI2   SI1   VS2   VS1  VVS2  VVS1    IF
-d <- as.data.frame(diamonds)
-ggplot(data = diamonds) + geom_point(mapping = aes(y = carat, x = price), color = d$clarity)
-ggplot(data = diamonds) + geom_smooth(mapping = aes(y = carat, x = price))
-
-
-xtabs(~ clarity + cut, data = diamonds)
-d <- as.data.frame(xtabs(~ clarity + cut, data = diamonds))
-
+#PROBLEM 2
 
 #(a)
 ggplot(data = diamonds) + geom_bar(mapping = aes(x = clarity, fill = as.factor(cut)), position = 'dodge') +
